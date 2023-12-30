@@ -1,0 +1,194 @@
+[33mcommit cfd783c679e4bd0054c999ef6671712cc98e9d9d[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: Artem Chuprina <ar.crrr@yandex.ru>
+Date:   Sat Dec 30 19:15:13 2023 +0300
+
+    bit update
+
+[1mdiff --git a/.browserslistrc b/.browserslistrc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..64e7ec0[m
+[1m--- /dev/null[m
+[1m+++ b/.browserslistrc[m
+[36m@@ -0,0 +1,9 @@[m
+[32m+[m[32m[production][m
+[32m+[m[32mdefaults[m
+[32m+[m[32mnot IE 11[m
+[32m+[m
+[32m+[m
+[32m+[m[32m[development][m
+[32m+[m[32mlast 2 Chrome versions[m
+[32m+[m[32mlast 2 Firefox versions[m
+[32m+[m[32mlast 1 Safari version[m
+[1mdiff --git a/.deploy/deploy.sh b/.deploy/deploy.sh[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e4af9c9[m
+[1m--- /dev/null[m
+[1m+++ b/.deploy/deploy.sh[m
+[36m@@ -0,0 +1,5 @@[m
+[32m+[m[32mcd ~/production-project[m
+[32m+[m[32mnpm run build:prod[m
+[32m+[m
+[32m+[m[32mrm -rf ~/../var/www/production_project/html[m
+[32m+[m[32mmv ~/production-project/build ~/../var/www/production_project/html[m
+\ No newline at end of file[m
+[1mdiff --git a/.deploy/nginx.conf b/.deploy/nginx.conf[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e541a50[m
+[1m--- /dev/null[m
+[1m+++ b/.deploy/nginx.conf[m
+[36m@@ -0,0 +1,47 @@[m
+[32m+[m[32mserver {[m
+[32m+[m[32m        root /var/www/production_project/html;[m
+[32m+[m
+[32m+[m[32m        index index.html index.htm index.nginx-debian.html;[m
+[32m+[m
+[32m+[m[32m        server_name productionapputv.ru www.productionapputv.ru;[m
+[32m+[m
+[32m+[m[32m        location  ~ ^/api/(.*)$ {[m
+[32m+[m[32m            proxy_pass   $scheme://80.93.190.163:8443/$1$is_args$args;[m
+[32m+[m[32m            proxy_redirect     off;[m
+[32m+[m[32m            proxy_set_header   Host             $host;[m
+[32m+[m[32m            proxy_set_header   X-Real-IP        $remote_addr;[m
+[32m+[m[32m            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        location / {[m
+[32m+[m[32m                try_files $uri $uri/ /index.html;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m
+[32m+[m[32m    listen [::]:443 ssl ipv6only=on; # managed by Certbot[m
+[32m+[m[32m    listen 443 ssl; # managed by Certbot[m
+[32m+[m[32m    ssl_certificate /etc/letsencrypt/live/productionapputv.ru/fullchain.pem; # managed by Certbot[m
+[32m+[m[32m    ssl_certificate_key /etc/letsencrypt/live/productionapputv.ru/privkey.pem; # managed by Certbot[m
+[32m+[m[32m    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot[m
+[32m+[m[32m    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot[m
+[32m+[m
+[32m+[m
+[32m+[m[32m}[m
+[32m+[m[32mserver {[m
+[32m+[m[32m    if ($host = www.productionapputv.ru) {[m
+[32m+[m[32m        return 301 https://$host$request_uri;[m
+[32m+[m[32m    } # managed by Certbot[m
+[32m+[m
+[32m+[m
+[32m+[m[32m    if ($host = productionapputv.ru) {[m
+[32m+[m[32m        return 301 https://$host$request_uri;[m
+[32m+[m[32m    } # managed by Certbot[m
+[32m+[m
+[32m+[m
+[32m+[m[32m        listen 80;[m
+[32m+[m[32m        listen [::]:80;[m
+[32m+[m
+[32m+[m[32m        server_name productionapputv.ru www.productionapputv.ru;[m
+[32m+[m[32m    return 404; # managed by Certbot[m
+[32m+[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/.eslintrc.js b/.eslintrc.js[m
+[1mnew file mode 100644[m
+[1mindex 0000000..fc987c5[m
+[1m--- /dev/null[m
+[1m+++ b/.eslintrc.js[m
+[36m@@ -0,0 +1,130 @@[m
+[32m+[m[32mmodule.exports = {[m
+[32m+[m[32m    env: {[m
+[32m+[m[32m        browser: true,[m
+[32m+[m[32m        es2021: true,[m
+[32m+[m[32m        jest: true,[m
+[32m+[m[32m    },[m
+[32m+[m[32m    extends: [[m
+[32m+[m[32m        'plugin:react/recommended',[m
+[32m+[m[32m        'airbnb',[m
+[32m+[m[32m        'plugin:i18next/recommended',[m
+[32m+[m[32m        'plugin:storybook/recommended',[m
+[32m+[m[32m        'prettier',[m
+[32m+[m[32m    ],[m
+[32m+[m[32m    parser: '@typescript-eslint/parser',[m
+[32m+[m[32m    parserOptions: {[m
+[32m+[m[32m        ecmaFeatures: {[m
+[32m+[m[32m            jsx: true,[m
+[32m+[m[32m        },[m
+[32m+[m[32m        ecmaVersion: 'latest',[m
+[32m+[m[32m        sourceType: 'module',[m
+[32m+[m[32m    },[m
+[32m+[m[32m    plugins: [[m
+[32m+[m[32m        'react',[m
+[32m+[m[32m        '@typescript-eslint',[m
+[32m+[m[32m        'i18next',[m
+[32m+[m[32m        'react-hooks',[m
+[32m+[m[32m        'ulbi-tv-plugin',[m
+[32m+[m[32m        'unused-imports',[m
+[32m+[m[32m    ],[m
+[32m+[m[32m    rules: {[m
+[32m+[m[32m        'unused-imports/no-unused-imports': 'error',[m
+[32m+[m[32m        'react/jsx-filename-extension': [[m
+[32m+[m[32m            2,[m
+[32m+[m[32m            {[m
+[32m+[m[32m                extensions: ['.js', '.jsx', '.tsx'],[m
+[32m+[m[32m            },[m
+[32m+[m[32m        ],[m
+[32m+[m[32m        'import/no-unresolved': 'off',[m
+[32m+[m[32m        'import/prefer-default-export': 'off',[m
+[32m+[m[32m        'no-unused-vars': 'off',[m
+[32m+[m[32m        'react/require-default-props': 'off',[m
+[32m+[m[32m        'react/react-in-jsx-scope': 'off',[m
+[32m+[m[32m        'react/jsx-props-no-spreading': 'warn',[m
+[32m+[m[32m        'react/function-component-definition': 'off',[m
+[32m+[m[32m        'no-shadow': 'off',[m
+[32m+[m[32m        'import/extensions': 'off',[m
+[32m+[m[32m        'import/no-extraneous-dependencies': 'off',[m
+[32m+[m[32m        'no-underscore-dangle': 'off',[m
+[32m+[m[32m        'i18next/no-literal-string': [[m
+[32m+[m[32m            'error',[m
+[32m+[m[32m            {[m
+[32m+[m[32m                markupOnly: true,[m
+[32m+[m[32m                ignoreAttribute: [[m
+[32m+[m[32m                    'as',[m
+[32m+[m[32m                    'role',[m
+[32m+[m[32m                    'data-testid',[m
+[32m+[m[32m                    'to',[m
+[32m+[m[32m                    'target',[m
+[32m+[m[32m                    'justify',[m
+[32m+[m[32m                    'align',[m
+[32m+[m[32m                    'border',[m
+[32m+[m[32m                    'direction',[m
+[32m+[m[32m                    'gap',[m
+[32m+[m[32m                    'feature',[m
+[32m+[m[32m                    'color',[m
+[32m+[m[32m                    'variant',[m
+[32m+[m[32m                    'size',[m
+[32m+[m[32m                    'wrap',[m
+[32m+[m[32m                ],[m
+[32m+[m[32m            },[m
+[32m+[m[32m        ],[m
+[32m+[m[32m        'max-len': [[m
+[32m+[m[32m            'error',[m
+[32m+[m[32m            {[m
+[32m+[m[32m                ignoreComments: true,[m
+[32m+[m[32m                code: 125,[m
+[32m+[m[32m            },[m
+[32m+[m[32m        ],[m
+[32m+[m[32m        'jsx-a11y/no-static-element-interactions': 'off',[m
+[32m+[m[32m        'jsx-a11y/click-events-have-key-events': 'off',[m
+[32m+[m[32m        'react-hooks/rules-of-hooks': 'error',[m
+[32m+[m[32m        // Checks rules of Hooks[m
+[32m+[m[32m        'react-hooks/exhaustive-deps': 'error',[m
+[32m+[m[32m        // Checks effect dependencies,[m
+[32m+[m[32m        'no-param-reassign': 'off',[m
+[32m+[m[32m        'no-undef': 'off',[m
+[32m+[m[32m        'react/no-array-index-key': 'off',[m
+[32m+[m[32m        'arrow-body-style': 'off',[m
+[32m+[m[32m        'ulbi-tv-plugin/path-checker': [[m
+[32m+[m[32m            'error',[m
+[32m+[m[32m            {[m
+[32m+[m[32m                alias: '@',[m
+[32m+[m[32m            },[m
+[32m+[m[32m        ],[m
+[32m+[m[32m        'ulbi-tv-plugin/layer-imports': [[m
+[32m+[m[32m            'error',[m
+[32m+[m[32m            {[m
+[32m+[m[32m                alias: '@',[m
+[32m+[m[32m                ignoreImportPatterns: ['**/StoreProvider', '**/testing'],[m
+[32m+[m[32m            },[m
+[32m+[m[32m  
